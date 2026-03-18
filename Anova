@@ -255,28 +255,28 @@ el.innerHTML=`
 <h2>📋 When Do We Use ANOVA?</h2>
 <p style="margin-bottom:12px">ANOVA (Analysis of Variance${helpTip('ANOVA stands for ANalysis Of VAriance. Despite its name, it tests whether group <b>means</b> are equal by comparing variances.')}) fits in a family of tests for comparing means:</p>
 <div class="cards-row" id="s1cards">
-<div class="info-card" id="s1card1">
-<h4 style="color:#DD1D21">🔴 One-Sample t-Test</h4>
-<p>"Is the average height in the US equal to 66 inches?"</p>
-<canvas id="s1cv1" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
-<div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:80px">Sample μ:</span><input type="range" id="s1mu1" min="60" max="72" step="0.5" value="66" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s1mu1V">66.0</span></div>
-<div style="text-align:center;font-size:0.9em;font-weight:700;color:#DD1D21;margin-top:6px" id="s1t1">t = 0.000</div>
-</div>
-<div class="info-card" id="s1card2">
-<h4 style="color:#009EB4">🔵 Two-Sample t-Test</h4>
-<p>"Is the average height in the US equal to that in Canada?"</p>
-<canvas id="s1cv2" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
-<div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:45px">μ₁:</span><input type="range" id="s1mu2a" min="60" max="72" step="0.5" value="66" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s1mu2aV">66.0</span></div>
-<div class="sr" style="margin-top:4px"><span style="font-size:0.82em;min-width:45px">μ₂:</span><input type="range" id="s1mu2b" min="60" max="72" step="0.5" value="68" style="accent-color:#009EB4"><span class="val" style="color:#009EB4" id="s1mu2bV">68.0</span></div>
-<div style="text-align:center;font-size:0.9em;font-weight:700;color:#009EB4;margin-top:6px" id="s1t2">t = −2.000</div>
-</div>
-<div class="info-card highlight" id="s1card3">
-<h4 style="color:#EB8705">⭐ ANOVA (3+ groups)</h4>
-<p>"Is the average height equal across the US, Canada, and Mexico?" <b style="color:#DD1D21">← This is what we're learning!</b></p>
-<canvas id="s1cv3" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
-<div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:80px">Groups:</span><input type="range" id="s1ngrp" min="3" max="5" step="1" value="3" style="accent-color:#EB8705"><span class="val" style="color:#EB8705" id="s1ngrpV">3</span></div>
-<div style="text-align:center;font-size:0.9em;font-weight:700;color:#EB8705;margin-top:6px" id="s1f">F = 4.520</div>
-</div>
+  <div class="info-card" id="s1card1">
+    <h4 style="color:#DD1D21">🔴 One-Sample t-Test</h4>
+    <p>"Is the average height in the US equal to 66 inches?"</p>
+    <canvas id="s1cv1" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
+    <div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:80px">Sample μ:</span><input type="range" id="s1mu1" min="60" max="72" step="0.5" value="66" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s1mu1V">66.0</span></div>
+    <div style="text-align:center;font-size:0.9em;font-weight:700;color:#DD1D21;margin-top:6px" id="s1t1">t = 0.000</div>
+  </div>
+  <div class="info-card" id="s1card2">
+    <h4 style="color:#009EB4">🔵 Two-Sample t-Test</h4>
+    <p>"Is the average height in the US equal to that in Canada?"</p>
+    <canvas id="s1cv2" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
+    <div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:45px">μ₁:</span><input type="range" id="s1mu2a" min="60" max="72" step="0.5" value="66" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s1mu2aV">66.0</span></div>
+    <div class="sr" style="margin-top:4px"><span style="font-size:0.82em;min-width:45px">μ₂:</span><input type="range" id="s1mu2b" min="60" max="72" step="0.5" value="68" style="accent-color:#009EB4"><span class="val" style="color:#009EB4" id="s1mu2bV">68.0</span></div>
+    <div style="text-align:center;font-size:0.9em;font-weight:700;color:#009EB4;margin-top:6px" id="s1t2">t = −2.000</div>
+  </div>
+  <div class="info-card highlight" id="s1card3">
+    <h4 style="color:#EB8705">⭐ ANOVA (3+ groups)</h4>
+    <p>"Is the average height equal across the US, Canada, and Mexico?" <b style="color:#DD1D21">← This is what we're learning!</b></p>
+    <canvas id="s1cv3" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
+    <div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:80px">Groups:</span><input type="range" id="s1ngrp" min="3" max="5" step="1" value="3" style="accent-color:#EB8705"><span class="val" style="color:#EB8705" id="s1ngrpV">3</span></div>
+    <div style="text-align:center;font-size:0.9em;font-weight:700;color:#EB8705;margin-top:6px" id="s1f">F = 4.520</div>
+  </div>
 </div>
 <div class="callout" style="text-align:center;font-size:1.05em"><b>When we have 3 or more groups and want to compare their means, we use ANOVA — <span style="color:#DD1D21">An</span>alysis <span style="color:#DD1D21">o</span>f <span style="color:#DD1D21">Va</span>riance.</b></div>
 <div class="fbox">
@@ -757,4 +757,166 @@ let html='';
 for(let i=0;i<k;i++){const col=GC[i%6],defMean=50+((i-(k-1)/2)*5);
 html+=`<div class="cg" style="border-color:${col};padding:8px 12px;margin-bottom:6px">
 <label style="color:${col};font-size:0.88em">Group ${i+1}</label>
-<div class="sr"><span style="font-size:0.82em;min-width:36px">μ:</span><input type="range" class="s7mean" min="30" max="70" step="0.5" value="${defMean}" style="accent-color:${col}"><span class="val" style="color:${col}" id="s7m${i}V">${defMean.
+<div class="sr"><span style="font-size:0.82em;min-width:36px">μ:</span><input type="range" class="s7mean" min="30" max="70" step="0.5" value="${defMean}" style="accent-color:${col}"><span class="val" style="color:${col}" id="s7m${i}V">${defMean.toFixed(1)}</span></div>
+<div class="sr"><span style="font-size:0.82em;min-width:36px">σ:</span><input type="range" class="s7sd" min="1" max="12" step="0.5" value="4" style="accent-color:${col}"><span class="val" style="color:${col}" id="s7s${i}V">4.0</span></div>
+<div class="sr"><span style="font-size:0.82em;min-width:36px">n:</span><input type="range" class="s7nn" min="3" max="30" step="1" value="10" style="accent-color:${col}"><span class="val" style="color:${col}" id="s7n${i}V">10</span></div>
+</div>`;}
+document.getElementById('s7sliders').innerHTML=html;
+document.querySelectorAll('.s7mean,.s7sd,.s7nn').forEach(el=>el.addEventListener('input',updateS7Labels));
+updateS7Labels();}
+function updateS7Labels(){const k=+document.getElementById('s7k').value;const ms=document.querySelectorAll('.s7mean'),ss=document.querySelectorAll('.s7sd'),ns=document.querySelectorAll('.s7nn');
+for(let i=0;i<k;i++){document.getElementById('s7m'+i+'V').textContent=(+ms[i].value).toFixed(1);document.getElementById('s7s'+i+'V').textContent=(+ss[i].value).toFixed(1);document.getElementById('s7n'+i+'V').textContent=ns[i].value;}}
+function s7Randomize(){const k=+document.getElementById('s7k').value;const ms=document.querySelectorAll('.s7mean'),ss=document.querySelectorAll('.s7sd'),ns=document.querySelectorAll('.s7nn');
+for(let i=0;i<k;i++){ms[i].value=40+Math.random()*20;ss[i].value=2+Math.random()*8;ns[i].value=Math.floor(5+Math.random()*20);}
+updateS7Labels();s7Generate();}
+function s7Generate(){
+const k=+document.getElementById('s7k').value;const ms=document.querySelectorAll('.s7mean'),ss=document.querySelectorAll('.s7sd'),ns=document.querySelectorAll('.s7nn');
+s7Data=[];s7Dots=[];const now=performance.now();
+for(let i=0;i<k;i++){const m=+ms[i].value,s=+ss[i].value,n=+ns[i].value;
+const pts=[];for(let j=0;j<n;j++){pts.push(m+s*rn());s7Dots.push({val:pts[pts.length-1],group:i,born:now,delay:j*40});}
+s7Data.push(pts);}drawS7();}
+function drawS7(){
+if(!s7Data)return;
+const k=s7Data.length,allPts=s7Data.flat(),gMeans=s7Data.map(mn),grandMean=mn(allPts),N=allPts.length;
+const ssb=s7Data.reduce((s,g,i)=>s+g.length*(gMeans[i]-grandMean)**2,0);
+const ssw=s7Data.reduce((s,g,i)=>s+g.reduce((s2,x)=>s2+(x-gMeans[i])**2,0),0);
+const sst=allPts.reduce((s,x)=>s+(x-grandMean)**2,0);
+const dfB=k-1,dfW=N-k,dfT=N-1,msb=ssb/dfB,msw=dfW>0?ssw/dfW:1,Fv=msw>0?msb/msw:0;
+const pv=dfW>0&&Fv>0?1-fCDF(Fv,dfB,dfW):1,rej=pv<0.05;
+document.getElementById('s7stats').innerHTML=`
+<div class="card"><div class="cl">Grand Mean</div><div class="cv c-o">${grandMean.toFixed(2)}</div></div>
+<div class="card"><div class="cl">SSB</div><div class="cv c-g">${ssb.toFixed(2)}</div></div>
+<div class="card"><div class="cl">SSW</div><div class="cv c-r">${ssw.toFixed(2)}</div></div>
+<div class="card"><div class="cl">MSB</div><div class="cv c-g">${msb.toFixed(2)}</div></div>
+<div class="card"><div class="cl">MSW</div><div class="cv c-r">${msw.toFixed(2)}</div></div>
+<div class="card"><div class="cl">F</div><div class="cv c-o">${Fv.toFixed(4)}</div></div>
+<div class="card"><div class="cl">p-value</div><div class="cv c-p">${pv.toFixed(4)}</div></div>`;
+const dec=document.getElementById('s7dec');dec.className=rej?'dbox rej':'dbox nrej';
+document.getElementById('s7verdict').textContent=rej?`REJECT H₀ (F=${Fv.toFixed(3)}, p=${pv.toFixed(4)} < 0.05)`:`FAIL TO REJECT H₀ (F=${Fv.toFixed(3)}, p=${pv.toFixed(4)} ≥ 0.05)`;
+const grpVars=s7Data.map(g=>va(g));const maxV=Math.max(...grpVars),minV=Math.min(...grpVars),ratio=minV>0?maxV/minV:999;
+document.getElementById('s7verdDet').innerHTML=ratio>4?`<span style="color:#DD1D21">⚠️ Variance ratio = ${ratio.toFixed(1)} > 4. Equal variance assumption may be violated!</span>`:'';
+document.getElementById('s7anovaWrap').innerHTML=`<table class="anova-table">
+<tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>p-value</th></tr>
+<tr><td><b>Between</b></td><td>${ssb.toFixed(2)}</td><td>${dfB}</td><td>${msb.toFixed(2)}</td><td>${Fv.toFixed(4)}</td><td>${pv.toFixed(4)}</td></tr>
+<tr><td><b>Within</b></td><td>${ssw.toFixed(2)}</td><td>${dfW}</td><td>${msw.toFixed(2)}</td><td></td><td></td></tr>
+<tr><td><b>Total</b></td><td>${sst.toFixed(2)}</td><td>${dfT}</td><td></td><td></td><td></td></tr></table>`;
+// Main canvas with raindrop animation
+const cv=document.getElementById('s7cv');const{c,W,H}=sCV(cv,420);
+const pL=55,pR=18,pT=28,pB=30;
+const xMn=Math.min(...allPts)-6,xMx=Math.max(...allPts)+6;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,1,'Value');
+const gmPx=tX(grandMean);
+c.setLineDash([7,4]);c.beginPath();c.moveTo(gmPx,pT);c.lineTo(gmPx,pT+ph);c.strokeStyle='#EB8705';c.lineWidth=2.5;c.stroke();c.setLineDash([]);
+c.fillStyle='#EB8705';c.font='bold 12px sans-serif';c.textAlign='center';c.fillText(`Grand Mean = ${grandMean.toFixed(1)}`,gmPx,pT-7);
+const now=performance.now();
+s7Data.forEach((pts,g)=>{
+const grpMean=gMeans[g],grpMPx=tX(grpMean),bandH=ph/k,yCenter=pT+bandH*(g+0.5);
+c.beginPath();c.moveTo(grpMPx,yCenter-bandH*0.38);c.lineTo(grpMPx,yCenter+bandH*0.38);c.strokeStyle=GC[g%6];c.lineWidth=3.5;c.stroke();
+c.fillStyle=GC[g%6];c.font='bold 12px sans-serif';c.textAlign='center';c.fillText(`x̄${g+1} = ${grpMean.toFixed(1)}`,grpMPx,yCenter-bandH*0.38-7);
+// Between arrow
+c.beginPath();c.moveTo(grpMPx,yCenter+bandH*0.22);c.lineTo(gmPx,yCenter+bandH*0.22);c.strokeStyle='#008443';c.lineWidth=2;c.stroke();
+const dir=gmPx>grpMPx?1:-1;if(Math.abs(gmPx-grpMPx)>10){c.beginPath();c.moveTo(gmPx,yCenter+bandH*0.22);c.lineTo(gmPx-dir*8,yCenter+bandH*0.22-5);c.lineTo(gmPx-dir*8,yCenter+bandH*0.22+5);c.closePath();c.fillStyle='#008443';c.fill();}
+// Points with raindrop effect
+pts.forEach((pt,pi)=>{
+const px=tX(pt);const dotInfo=s7Dots.find(d=>d.group===g&&Math.abs(d.val-pt)<0.0001);
+let py;const jitter=(pi-pts.length/2)*Math.min(3,bandH*0.6/pts.length);
+if(dotInfo){const age=(now-dotInfo.born-dotInfo.delay)/1000;if(age<0)return;
+const fl=Math.min(1,age/0.6);py=pT+fl*(yCenter+jitter-pT);const al=Math.min(1,age/0.3);c.globalAlpha=al;}
+else{py=yCenter+jitter;}
+c.beginPath();c.moveTo(px,py);c.lineTo(grpMPx,py);c.strokeStyle='rgba(221,29,33,0.25)';c.lineWidth=1;c.stroke();
+c.beginPath();c.arc(px,py,4,0,2*Math.PI);c.fillStyle=GCa[g%6]+'0.8)';c.fill();c.strokeStyle=GC[g%6];c.lineWidth=0.7;c.stroke();c.globalAlpha=1;});});
+// F-dist
+document.getElementById('s7fdistWrap').style.display='block';
+const fcv=document.getElementById('s7fcv');const{c:c2,W:W2,H:H2}=sCV(fcv,240);
+const pL2=45,pR2=18,pT2=22,pB2=26,xMn2=0,xMx2=Math.max(Fv*1.5,6);
+let mode=dfB>2?(dfB-2)/dfB*dfW/(dfW+2):0.01;let maxY2=fPDF(Math.max(0.01,mode),dfB,dfW)*1.3;if(!isFinite(maxY2)||maxY2<=0)maxY2=0.5;
+const r2=dAx(c2,W2,H2,pL2,pR2,pT2,pB2,xMn2,xMx2,maxY2,'F');
+const fcrit=fInv(0.95,dfB,dfW);
+fillArea(c2,pL2,pR2,pT2,pB2,W2,H2,xMn2,xMx2,maxY2,fcrit,xMx2,f=>fPDF(f,dfB,dfW),'rgba(221,29,33,0.18)');
+fillArea(c2,pL2,pR2,pT2,pB2,W2,H2,xMn2,xMx2,maxY2,Fv,xMx2,f=>fPDF(f,dfB,dfW),'rgba(100,25,100,0.22)');
+drawCurve(c2,pL2,pR2,pT2,pB2,W2,H2,xMn2,xMx2,maxY2,f=>fPDF(f,dfB,dfW),'#EB8705',3,null,null);
+vLine(c2,r2.tX,r2.ph,pT2,fcrit,'#DD1D21',`F_crit=${fcrit.toFixed(2)}`);
+const fp2=r2.tX(Fv);c2.beginPath();c2.moveTo(fp2,pT2);c2.lineTo(fp2,pT2+r2.ph);c2.strokeStyle='#641964';c2.lineWidth=3;c2.stroke();
+c2.beginPath();c2.arc(fp2,pT2+r2.ph*0.3,6,0,2*Math.PI);c2.fillStyle='#641964';c2.fill();
+c2.fillStyle='#641964';c2.font='bold 12px sans-serif';c2.textAlign='center';c2.fillText(`F = ${Fv.toFixed(2)}`,fp2,pT2+r2.ph*0.3-12);}
+
+// ===========================
+// SECTION 8
+// ===========================
+let s8Inited=false,s8Score=0,s8Answered=[];
+const s8Questions=[
+{q:'When should you use ANOVA instead of a t-test?',opts:['When comparing exactly 2 groups','When comparing 3 or more groups','When the data is categorical','When sample size is large'],correct:1,explain:'ANOVA is designed for comparing means across 3 or more groups simultaneously.'},
+{q:'What does H₀ state in a one-way ANOVA?',opts:['All groups have different means','At least one mean differs','All group means are equal','The variances are equal'],correct:2,explain:'H₀: μ₁ = μ₂ = … = μₖ — all group means are equal.'},
+{q:'What does a large F-statistic indicate?',opts:['Within-group variance dominates','Groups are very similar','Between-group variance is large relative to within','Sample size is too small'],correct:2,explain:'Large F means the variation between groups is much larger than variation within groups.'},
+{q:'What happens to F when within-group variance is very large?',opts:['F increases','F decreases','F stays the same','F becomes negative'],correct:1,explain:'F = MSB/MSW. When MSW increases, F decreases.'},
+{q:'What is the equal variance assumption?',opts:['All group means should be equal','All group variances should be approximately equal','Sample sizes must be equal','Data must be normally distributed'],correct:1,explain:'ANOVA assumes homogeneity of variances — all groups roughly equal variance.'},
+{q:'Degrees of freedom (between) with 4 groups?',opts:['2','3','4','N−4'],correct:1,explain:'df_between = k − 1 = 4 − 1 = 3.'},
+{q:'If p = 0.03 and α = 0.05, the conclusion is:',opts:['Fail to reject H₀','Reject H₀ — at least one mean differs','Accept H₀','Inconclusive'],correct:1,explain:'p = 0.03 < α = 0.05, so we reject H₀.'}
+];
+function initS8(){
+if(s8Inited)return;s8Inited=true;
+s8Answered=new Array(s8Questions.length).fill(false);s8Score=0;
+const el=document.getElementById('s8');
+let html=`<h2>🎓 Quiz & Summary</h2>
+<h3>Quiz — Test Your Understanding</h3>
+<div id="s8scoreBox" style="text-align:center;font-size:1em;margin-bottom:12px;font-weight:700;color:#641964">Score: 0 / ${s8Questions.length}</div>`;
+s8Questions.forEach((q,qi)=>{html+=`<div class="quiz-q" id="s8q${qi}"><div class="qtext">${qi+1}. ${q.q}</div>`;
+q.opts.forEach((opt,oi)=>{html+=`<div class="quiz-opt" id="s8q${qi}o${oi}" onclick="s8Answer(${qi},${oi})">${opt}</div>`;});
+html+=`<div id="s8q${qi}fb" class="quiz-fb"></div></div>`;});
+html+=`<h3 style="margin-top:20px">📌 Summary — Key Takeaways</h3>
+<div class="summary-card"><h4>What is ANOVA?</h4><ul>
+<li>Tests whether means of <b>3+ groups</b> are all equal.</li>
+<li>H₀: μ₁ = μ₂ = … = μₖ &nbsp;&nbsp; H₁: At least one μᵢ differs.</li></ul></div>
+<div class="summary-card" style="border-left-color:#EB8705"><h4 style="color:#EB8705">The F-Statistic</h4><ul>
+<li><b>F = MSB / MSW</b> = Between-group variance / Within-group variance.</li>
+<li>Large F → evidence that group means differ.</li>
+<li>MSB = SSB/(k−1), &nbsp; MSW = SSW/(N−k).</li></ul></div>
+<div class="summary-card" style="border-left-color:#008443"><h4 style="color:#008443">Key Assumption</h4><ul>
+<li>All groups must have <b>approximately equal variance</b>.</li>
+<li>Rule of thumb: largest variance ≤ 4× smallest.</li></ul></div>
+<div class="summary-card" style="border-left-color:#641964"><h4 style="color:#641964">Degrees of Freedom</h4><ul>
+<li>df_between = k − 1</li>
+<li>df_within = N − k</li></ul></div>
+<div class="fbox"><div class="ft">Complete ANOVA Formula Reference</div>
+<span class="g">SSB = Σᵢ nᵢ · (x̄ᵢ − x̄)² &nbsp;&nbsp; (between-group sum of squares)</span>
+<span class="g">SSW = Σᵢ Σⱼ (xᵢⱼ − x̄ᵢ)² &nbsp;&nbsp; (within-group sum of squares)</span>
+<span class="g">SST = SSB + SSW</span>
+<span class="g">MSB = SSB / (k−1) &nbsp;&nbsp;&nbsp; MSW = SSW / (N−k)</span>
+<span class="g">F = MSB / MSW &nbsp; ~ &nbsp; F(k−1, N−k) under H₀</span>
+<span class="g">Reject H₀ if p-value < α (typically α = 0.05)</span></div>`;
+el.innerHTML=html;}
+function s8Answer(qi,oi){if(s8Answered[qi])return;s8Answered[qi]=true;
+const q=s8Questions[qi],fb=document.getElementById('s8q'+qi+'fb');
+if(oi===q.correct){s8Score++;document.getElementById('s8q'+qi+'o'+oi).className='quiz-opt correct';
+fb.innerHTML=`<span style="color:#008443;font-weight:700">✅ Correct! ${q.explain}</span>`;}
+else{document.getElementById('s8q'+qi+'o'+oi).className='quiz-opt wrong';document.getElementById('s8q'+qi+'o'+q.correct).className='quiz-opt correct';
+fb.innerHTML=`<span style="color:#DD1D21;font-weight:700">❌ Incorrect. ${q.explain}</span>`;}
+document.getElementById('s8scoreBox').textContent=`Score: ${s8Score} / ${s8Questions.length}`;
+if(s8Score===s8Questions.length&&s8Answered.every(a=>a))launchConfetti();}
+function launchConfetti(){const box=document.getElementById('confettiBox');
+for(let i=0;i<100;i++){const c=document.createElement('div');
+c.style.cssText=`position:absolute;top:-10px;left:${Math.random()*100}%;width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;background:${['#DD1D21','#009EB4','#EB8705','#008443','#641964','#FBCE07'][Math.floor(Math.random()*6)]};border-radius:${Math.random()>0.5?'50%':'2px'};animation:confFall ${2+Math.random()*3}s linear forwards;opacity:0.9;`;
+box.appendChild(c);}
+if(!document.getElementById('confStyle')){const style=document.createElement('style');style.id='confStyle';
+style.textContent=`@keyframes confFall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(${window.innerHeight+50}px) rotate(${720}deg);opacity:0}}`;
+document.head.appendChild(style);}
+setTimeout(()=>{box.innerHTML='';},5000);}
+
+showSection(0);
+
+// Animation loop for sandbox raindrops
+(function animLoop(){
+const now=performance.now();
+if(currentSection===6&&s7Data&&s7Dots.length>0){
+const active=s7Dots.filter(d=>(now-d.born-d.delay)/1000<3);
+if(active.length>0)drawS7();
+s7Dots=s7Dots.filter(d=>(now-d.born-d.delay)/1000<5);}
+requestAnimationFrame(animLoop);})();
+
+window.addEventListener('resize',()=>{
+if(currentSection===0&&s1Inited)drawS1();if(currentSection===1&&s2Inited)drawS2();
+if(currentSection===2&&s3Inited)drawS3();if(currentSection===3&&s4Inited)drawS4();
+if(currentSection===5&&s6Inited)drawS6();if(currentSection===6&&s7Data)drawS7();});
+</script>
+</body>
+</html>
