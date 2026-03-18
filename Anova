@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive One-Way ANOVA Explorer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f5f5f5;color:#404040;overflow-x:hidden;font-size:15px;line-height:1.55}
+body.dark{background:#1a1a2e;color:#e0e0e0}
+body.dark .cg{background:#16213e;border-color:#0f3460}
+body.dark .card{background:#16213e;border-color:#0f3460}
+body.dark .fbox{background:#16213e;border-color:#0f3460}
+body.dark .dbox{background:#16213e}
+body.dark canvas{background:#0f1a2e!important}
+body.dark .nav-item{color:#aaa;background:#16213e;border-color:#333}
+body.dark .nav-item.active{color:#fff;background:#e94560}
+body.dark .section{background:#16213e}
+body.dark .tab{background:#16213e;color:#e94560;border-color:#e94560}
+body.dark .tab.active{background:#e94560;color:#fff}
+body.dark .helpTip .helpBody{background:#16213e;color:#e0e0e0;border-color:#0f3460}
+body.dark .info-card{background:#16213e;border-color:#333}
+body.dark .info-card p{color:#aaa}
+body.dark .callout{background:#1a1a0e;border-left-color:#EB8705}
+body.dark .callout.green{background:#0e1a12}
+body.dark .callout.red{background:#1a0e0e}
+body.dark .quiz-q{background:#16213e;border-color:#333}
+body.dark .quiz-opt.correct{background:#0e1a12}
+body.dark .quiz-opt.wrong{background:#1a0e0e}
+body.dark .anova-table th{background:#0f3460}
+body.dark .anova-table td{border-color:#333}
+body.dark .anova-table .hl{background:#332b00}
+body.dark .step-box{background:#16213e;border-color:#009EB4}
+body.dark .indicator.green{background:#0e1a12}
+body.dark .indicator.red{background:#1a0e0e}
+body.dark .summary-card{background:#0f1a2e}
+body.dark .hyp-box{background:#0f1a2e}
+body.dark .nav-bar{background:#1a1a2e;border-bottom-color:#333}
+body.dark .dark-toggle{background:#0f3460;color:#e0e0e0;border-color:#e94560}
+body.dark .canvas-wrap .clab{background:rgba(22,33,62,0.92);color:#e0e0e0}
+body.dark .helpTip .helpIcon{background:#333;color:#aaa}
+
+.container{max-width:1500px;margin:0 auto;padding:10px 18px}
+h1{text-align:center;font-size:1.7em;color:#DD1D21;margin:10px 0 2px}
+.sub{text-align:center;font-size:0.95em;color:#666;margin-bottom:12px}
+
+.top-bar{display:flex;justify-content:space-between;align-items:center;padding:6px 0;flex-wrap:wrap;gap:8px}
+.dark-toggle{padding:7px 18px;border:2px solid #555;background:#fff;border-radius:18px;cursor:pointer;font-size:0.85em;font-weight:700;transition:all .15s}
+.dark-toggle:hover{border-color:#DD1D21;color:#DD1D21}
+
+.nav-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;justify-content:center;position:sticky;top:0;z-index:100;background:#f5f5f5;padding:8px 0;border-bottom:1px solid #ddd}
+.nav-item{padding:8px 14px;border-radius:18px;cursor:pointer;font-size:0.82em;font-weight:700;color:#666;background:#fff;border:1.5px solid #ddd;transition:all .2s;white-space:nowrap}
+.nav-item.active{background:#DD1D21;color:#fff;border-color:#DD1D21}
+.nav-item:hover{border-color:#DD1D21}
+
+.section{background:#fff;border-radius:12px;padding:22px 28px;margin-bottom:16px;border:1px solid #eee;display:none}
+.section.active{display:block}
+.section h2{font-size:1.35em;color:#DD1D21;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section h3{font-size:1.1em;color:#EB8705;margin:14px 0 8px}
+
+.cg{background:#fff;border-radius:8px;padding:10px 14px;border:1.5px solid #FBCE07;margin-bottom:8px}
+.cg label{display:block;font-weight:700;font-size:0.9em;margin-bottom:3px}
+.cg .desc{font-size:0.78em;color:#666;margin-bottom:4px}
+.sr{display:flex;align-items:center;gap:8px;min-height:28px}
+.sr input[type=range]{flex:1;height:6px;accent-color:#DD1D21;cursor:pointer}
+.sr .val{min-width:48px;text-align:right;font-weight:700;font-size:1em;color:#DD1D21}
+
+.cards-row{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0}
+.info-card{flex:1;min-width:240px;background:#fff;border-radius:10px;padding:16px;border:2px solid #ddd;transition:all .3s}
+.info-card.highlight{border-color:#DD1D21;box-shadow:0 0 20px rgba(221,29,33,0.25);animation:glowPulse 2s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 15px rgba(221,29,33,0.2)}50%{box-shadow:0 0 25px rgba(221,29,33,0.4)}}
+.info-card h4{font-size:1.05em;margin-bottom:6px}
+.info-card p{font-size:0.88em;color:#666;line-height:1.5}
+
+.btn{padding:9px 20px;border:2px solid #DD1D21;background:#fff;color:#DD1D21;border-radius:18px;cursor:pointer;font-size:0.88em;font-weight:700;transition:all .15s;text-align:center}
+.btn:hover{background:#DD1D21;color:#fff}
+.btn.bl{border-color:#009EB4;color:#009EB4}.btn.bl:hover{background:#009EB4;color:#fff}
+.btn.or{border-color:#EB8705;color:#EB8705}.btn.or:hover{background:#EB8705;color:#fff}
+.btn.gn{border-color:#008443;color:#008443}.btn.gn:hover{background:#008443;color:#fff}
+.btn.pur{border-color:#641964;color:#641964}.btn.pur:hover{background:#641964;color:#fff}
+.btn.sm{padding:6px 14px;font-size:0.82em}
+
+.canvas-wrap{position:relative;margin:10px 0}
+.canvas-wrap canvas{display:block;width:100%;border-radius:8px;background:#fff;border:1px solid #ddd}
+.canvas-wrap .clab{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:0.82em;font-weight:700;color:#404040;background:rgba(255,255,255,0.94);padding:3px 12px;border-radius:6px;white-space:nowrap;pointer-events:none}
+
+.grid-2x2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:850px){.grid-2x2,.grid-3{grid-template-columns:1fr}}
+
+.rrow{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.card{background:#fff;border-radius:8px;padding:8px 10px;text-align:center;border:1px solid #ddd;flex:1;min-width:85px}
+.card .cl{font-size:0.78em;color:#666;margin-bottom:2px}
+.card .cv{font-size:1.05em;font-weight:700}
+.c-r{color:#DD1D21}.c-b{color:#009EB4}.c-g{color:#008443}.c-o{color:#EB8705}.c-p{color:#641964}
+
+.dbox{background:#fff;border-radius:8px;padding:10px 16px;text-align:center;margin:10px 0;border:2px solid #008443}
+body.dark .dbox{background:#16213e}
+.dbox .vd{font-size:1.05em;font-weight:700}.dbox .vdd{font-size:0.82em;color:#666;margin-top:3px}
+.rej{border-color:#DD1D21!important}.rej .vd{color:#DD1D21}.nrej .vd{color:#008443}
+
+.fbox{background:#fff;border-radius:8px;padding:14px 18px;border:1.5px solid #FBCE07;margin:12px 0;font-size:0.88em;line-height:1.75}
+.fbox .ft{font-weight:700;color:#DD1D21;font-size:1.1em;margin-bottom:4px}
+.fbox .m{font-family:'Courier New',monospace;color:#EB8705;display:block;margin:3px 0;font-size:0.95em}
+.fbox .g{font-family:'Courier New',monospace;color:#641964;display:block;margin:3px 0;font-size:0.95em}
+
+.callout{background:#FFF9E6;border-left:4px solid #EB8705;padding:14px 18px;margin:12px 0;border-radius:0 8px 8px 0;font-size:0.9em;line-height:1.6}
+.callout.green{background:#E8F8F0;border-left-color:#008443}
+.callout.red{background:#FDE8E8;border-left-color:#DD1D21}
+
+.quiz-q{background:#fff;border:2px solid #ddd;border-radius:10px;padding:16px;margin:10px 0}
+.quiz-q .qtext{font-weight:700;margin-bottom:10px;font-size:0.98em}
+.quiz-opt{display:block;padding:10px 16px;margin:6px 0;border:1.5px solid #ddd;border-radius:8px;cursor:pointer;font-size:0.9em;transition:all .15s}
+.quiz-opt:hover{border-color:#DD1D21;background:#fff5f5}
+.quiz-opt.correct{border-color:#008443;background:#E8F8F0;color:#008443;font-weight:700}
+.quiz-opt.wrong{border-color:#DD1D21;background:#FDE8E8;color:#DD1D21}
+.quiz-fb{font-size:0.85em;margin-top:6px;padding:6px 10px;border-radius:6px}
+
+.anova-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:0.9em}
+.anova-table th,.anova-table td{border:1px solid #ddd;padding:10px 14px;text-align:center}
+.anova-table th{background:#f0f0f0;font-weight:700;font-size:0.92em}
+
+.step-box{background:#fff;border:2px solid #009EB4;border-radius:10px;padding:18px;margin:12px 0;min-height:90px;font-size:0.92em;line-height:1.7}
+.step-box h4{color:#009EB4;margin-bottom:8px;font-size:1.05em}
+
+.helpTip{position:relative;display:inline-block;margin-left:4px;cursor:help}
+.helpTip .helpIcon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#e0e0e0;color:#666;font-size:11px;font-weight:700;transition:all .15s}
+.helpTip:hover .helpIcon{background:#DD1D21;color:#fff}
+.helpTip .helpBody{display:none;position:absolute;bottom:130%;left:50%;transform:translateX(-50%);width:260px;padding:12px;background:#fff;border:1px solid #ddd;border-radius:8px;font-size:0.82em;color:#555;z-index:50;box-shadow:0 4px 12px rgba(0,0,0,0.15);line-height:1.5}
+.helpTip:hover .helpBody{display:block}
+
+.slider-group{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.flex-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+.flex-col{display:flex;flex-direction:column;gap:8px}
+.flex-1{flex:1;min-width:0}
+
+.confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+.lrow{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:8px 0}
+.li{display:flex;align-items:center;gap:5px;font-size:0.82em}
+.lsw{width:16px;height:7px;border-radius:3px}
+
+.hyp-box{font-size:1.2em;text-align:center;padding:18px;background:#f8f9fa;border-radius:10px;margin:12px 0;font-family:'Courier New',monospace;line-height:1.8}
+
+.indicator{display:inline-block;padding:8px 22px;border-radius:22px;font-weight:700;font-size:0.95em;margin:6px}
+.indicator.green{background:#E8F8F0;color:#008443;border:2px solid #008443}
+.indicator.red{background:#FDE8E8;color:#DD1D21;border:2px solid #DD1D21}
+
+.summary-card{background:#f8f9fa;border-radius:10px;padding:18px;margin:10px 0;border-left:5px solid #DD1D21}
+.summary-card h4{color:#DD1D21;margin-bottom:8px;font-size:1.05em}
+.summary-card li{font-size:0.9em;margin:5px 0;line-height:1.5}
+.summary-card ul{padding-left:20px}
+
+.hidden{display:none!important}
+
+/* Ensure slider containers don't overlap */
+.cg + .cg{margin-top:6px}
+.info-card .sr{margin-top:6px}
+.info-card .sr input[type=range]{min-width:80px}
+.info-card canvas{margin-top:8px}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="top-bar">
+<div></div>
+<div style="text-align:center">
+<h1>📊 Interactive One-Way ANOVA Explorer</h1>
+<p class="sub">Populations → Group Means → Variance Decomposition → F-Statistic → Decision</p>
+</div>
+<button class="dark-toggle" onclick="document.body.classList.toggle('dark')">🌓 Dark Mode</button>
+</div>
+
+<div class="nav-bar" id="navBar"></div>
+<div id="sectionsContainer"></div>
+</div>
+<div class="confetti-container" id="confettiBox"></div>
+
+<script>
+// ========== MATH HELPERS ==========
+function lnG(z){if(z<0.5)return Math.log(Math.PI/Math.sin(Math.PI*z))-lnG(1-z);z-=1;const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];let x=c[0];for(let i=1;i<9;i++)x+=c[i]/(z+i);const t=z+7.5;return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x);}
+function bCF(x,a,b){const mx=300,e=1e-14;let c2=1,d=1-((a+b)*x)/(a+1);if(Math.abs(d)<1e-30)d=1e-30;d=1/d;let h=d;for(let m=1;m<=mx;m++){const m2=2*m;let aa=m*(b-m)*x/((a-1+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;d=1/d;c2=1+aa/c2;if(Math.abs(c2)<1e-30)c2=1e-30;h*=d*c2;aa=-(a+m)*(a+b+m)*x/((a+m2)*(a+1+m2));d=1+aa*d;if(Math.abs(d)<1e-30)d=1e-30;d=1/d;c2=1+aa/c2;if(Math.abs(c2)<1e-30)c2=1e-30;h*=d*c2;if(Math.abs(d*c2-1)<e)break;}return h;}
+function rB(x,a,b){if(x<=0)return 0;if(x>=1)return 1;const lB=lnG(a)+lnG(b)-lnG(a+b),f=Math.exp(a*Math.log(x)+b*Math.log(1-x)-lB);if(x<(a+1)/(a+b+2))return f*bCF(x,a,b)/a;return 1-f*bCF(1-x,b,a)/b;}
+function nP(x,m,s){const z=(x-m)/s;return Math.exp(-0.5*z*z)/(s*Math.sqrt(2*Math.PI));}
+function fPDF(x,d1,d2){if(x<=0)return 0;return Math.exp((d1/2)*Math.log(d1)+(d2/2)*Math.log(d2)+(d1/2-1)*Math.log(x)-((d1+d2)/2)*Math.log(d1*x+d2)-lnG(d1/2)-lnG(d2/2)+lnG((d1+d2)/2));}
+function fCDF(x,d1,d2){if(x<=0)return 0;return rB(d1*x/(d1*x+d2),d1/2,d2/2);}
+function fInv(p,d1,d2){let lo=0,hi=200;for(let i=0;i<200;i++){const m=(lo+hi)/2;if(fCDF(m,d1,d2)<p)lo=m;else hi=m;}return(lo+hi)/2;}
+function rn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function mn(a){return a.reduce((s,x)=>s+x,0)/a.length;}
+function va(a){const m=mn(a);return a.reduce((s,x)=>s+(x-m)*(x-m),0)/Math.max(1,(a.length-1));}
+function helpTip(text){return `<span class="helpTip"><span class="helpIcon">?</span><span class="helpBody">${text}</span></span>`;}
+
+const GC=['#DD1D21','#009EB4','#EB8705','#641964','#008443','#E67E22'];
+const GCa=['rgba(221,29,33,','rgba(0,158,180,','rgba(235,135,5,','rgba(100,25,100,','rgba(0,132,67,','rgba(230,126,34,'];
+
+const SECTIONS=[
+{id:'s1',title:'1. When Use ANOVA?'},
+{id:'s2',title:'2. The Hypotheses'},
+{id:'s3',title:'3. Between vs Within'},
+{id:'s4',title:'4. Equal Variance'},
+{id:'s5',title:'5. Calculating F'},
+{id:'s6',title:'6. F-Distribution'},
+{id:'s7',title:'7. Sandbox'},
+{id:'s8',title:'8. Quiz & Summary'}
+];
+
+const navBar=document.getElementById('navBar');
+SECTIONS.forEach((s,i)=>{const d=document.createElement('div');d.className='nav-item'+(i===0?' active':'');d.textContent=s.title;d.onclick=()=>showSection(i);d.id='nav_'+s.id;navBar.appendChild(d);});
+
+let currentSection=0;
+function showSection(idx){
+currentSection=idx;
+document.querySelectorAll('.nav-item').forEach((n,i)=>n.className='nav-item'+(i===idx?' active':''));
+document.querySelectorAll('.section').forEach((s,i)=>s.className='section'+(i===idx?' active':''));
+setTimeout(()=>{if(idx===0)initS1();if(idx===1)initS2();if(idx===2)initS3();if(idx===3)initS4();if(idx===4)initS5();if(idx===5)initS6();if(idx===6)initS7();if(idx===7)initS8();},20);
+}
+
+const cont=document.getElementById('sectionsContainer');
+SECTIONS.forEach((s,i)=>{const div=document.createElement('div');div.className='section'+(i===0?' active':'');div.id=s.id;cont.appendChild(div);});
+
+// ========== CANVAS HELPERS ==========
+function sCV(cv,h){const d=window.devicePixelRatio||1;const W=cv.clientWidth||cv.parentElement.clientWidth||700;const H=h||cv.clientHeight||300;cv.width=W*d;cv.height=H*d;cv.style.height=H+'px';const c=cv.getContext('2d');c.setTransform(d,0,0,d,0,0);return{c,W,H};}
+function dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,mY,xl){
+const pw=W-pL-pR,ph=H-pT-pB;
+c.strokeStyle='#ccc';c.lineWidth=1;c.beginPath();c.moveTo(pL,pT+ph);c.lineTo(pL+pw,pT+ph);c.stroke();
+const raw=(xMx-xMn)/7,mg=Math.pow(10,Math.floor(Math.log10(Math.max(raw,0.001))));let ni=mg;if(raw/mg>=5)ni=5*mg;else if(raw/mg>=2)ni=2*mg;
+c.fillStyle='#888';c.font='11px sans-serif';c.textAlign='center';
+for(let xv=Math.ceil(xMn/ni)*ni;xv<=xMx;xv+=ni){const px=pL+(xv-xMn)/(xMx-xMn)*pw;if(px<pL+4||px>pL+pw-4)continue;c.beginPath();c.moveTo(px,pT+ph);c.lineTo(px,pT+ph+5);c.strokeStyle='#bbb';c.lineWidth=1;c.stroke();c.fillText(Math.abs(xv)<0.001?'0':xv.toFixed(ni>=1?0:1),px,pT+ph+17);}
+if(xl){c.fillStyle='#999';c.font='11px sans-serif';c.textAlign='center';c.fillText(xl,pL+pw/2,H-2);}
+const tX=x=>pL+(x-xMn)/(xMx-xMn)*pw;
+const tY=y=>pT+ph-y/mY*ph;
+return{tX,tY,pw,ph};}
+function drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,mY,fn,col,lw,dash,fill){
+const pw=W-pL-pR,ph=H-pT-pB;
+const tX=x=>pL+(x-xMn)/(xMx-xMn)*pw,tY=y=>pT+ph-y/mY*ph;
+if(fill){c.beginPath();c.moveTo(tX(xMn),tY(0));for(let i=0;i<=300;i++){const xv=xMn+(xMx-xMn)*i/300;c.lineTo(tX(xv),tY(fn(xv)));}c.lineTo(tX(xMx),tY(0));c.closePath();c.fillStyle=fill;c.fill();}
+c.beginPath();for(let i=0;i<=400;i++){const xv=xMn+(xMx-xMn)*i/400;i===0?c.moveTo(tX(xv),tY(fn(xv))):c.lineTo(tX(xv),tY(fn(xv)));}
+if(dash)c.setLineDash(dash);c.strokeStyle=col;c.lineWidth=lw;c.stroke();if(dash)c.setLineDash([]);}
+function fillArea(c,pL,pR,pT,pB,W,H,xMn,xMx,mY,aL,aR,fn,col){
+const pw=W-pL-pR,ph=H-pT-pB;
+const tX=x=>pL+(x-xMn)/(xMx-xMn)*pw,tY=y=>pT+ph-y/mY*ph;
+const s=200,dx=(aR-aL)/s;c.beginPath();c.moveTo(tX(aL),tY(0));for(let i=0;i<=s;i++)c.lineTo(tX(aL+i*dx),tY(fn(aL+i*dx)));c.lineTo(tX(aR),tY(0));c.closePath();c.fillStyle=col;c.fill();}
+function vLine(c,tX,ph,pT,xv,col,lbl,dash){
+const px=tX(xv);if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(px,pT);c.lineTo(px,pT+ph);c.strokeStyle=col;c.lineWidth=1.8;c.stroke();c.setLineDash([]);
+if(lbl){c.fillStyle=col;c.font='bold 11px sans-serif';c.textAlign='center';c.fillText(lbl,px,pT-5);}}
+
+// ===========================
+// SECTION 1
+// ===========================
+let s1Inited=false;
+function initS1(){
+if(s1Inited){drawS1();return;}
+s1Inited=true;
+const el=document.getElementById('s1');
+el.innerHTML=`
+<h2>📋 When Do We Use ANOVA?</h2>
+<p style="margin-bottom:12px">ANOVA (Analysis of Variance${helpTip('ANOVA stands for ANalysis Of VAriance. Despite its name, it tests whether group <b>means</b> are equal by comparing variances.')}) fits in a family of tests for comparing means:</p>
+<div class="cards-row" id="s1cards">
+<div class="info-card" id="s1card1">
+<h4 style="color:#DD1D21">🔴 One-Sample t-Test</h4>
+<p>"Is the average height in the US equal to 66 inches?"</p>
+<canvas id="s1cv1" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
+<div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:80px">Sample μ:</span><input type="range" id="s1mu1" min="60" max="72" step="0.5" value="66" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s1mu1V">66.0</span></div>
+<div style="text-align:center;font-size:0.9em;font-weight:700;color:#DD1D21;margin-top:6px" id="s1t1">t = 0.000</div>
+</div>
+<div class="info-card" id="s1card2">
+<h4 style="color:#009EB4">🔵 Two-Sample t-Test</h4>
+<p>"Is the average height in the US equal to that in Canada?"</p>
+<canvas id="s1cv2" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
+<div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:45px">μ₁:</span><input type="range" id="s1mu2a" min="60" max="72" step="0.5" value="66" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s1mu2aV">66.0</span></div>
+<div class="sr" style="margin-top:4px"><span style="font-size:0.82em;min-width:45px">μ₂:</span><input type="range" id="s1mu2b" min="60" max="72" step="0.5" value="68" style="accent-color:#009EB4"><span class="val" style="color:#009EB4" id="s1mu2bV">68.0</span></div>
+<div style="text-align:center;font-size:0.9em;font-weight:700;color:#009EB4;margin-top:6px" id="s1t2">t = −2.000</div>
+</div>
+<div class="info-card highlight" id="s1card3">
+<h4 style="color:#EB8705">⭐ ANOVA (3+ groups)</h4>
+<p>"Is the average height equal across the US, Canada, and Mexico?" <b style="color:#DD1D21">← This is what we're learning!</b></p>
+<canvas id="s1cv3" style="width:100%;height:170px;border:1px solid #eee;border-radius:8px"></canvas>
+<div class="sr" style="margin-top:8px"><span style="font-size:0.82em;min-width:80px">Groups:</span><input type="range" id="s1ngrp" min="3" max="5" step="1" value="3" style="accent-color:#EB8705"><span class="val" style="color:#EB8705" id="s1ngrpV">3</span></div>
+<div style="text-align:center;font-size:0.9em;font-weight:700;color:#EB8705;margin-top:6px" id="s1f">F = 4.520</div>
+</div>
+</div>
+<div class="callout" style="text-align:center;font-size:1.05em"><b>When we have 3 or more groups and want to compare their means, we use ANOVA — <span style="color:#DD1D21">An</span>alysis <span style="color:#DD1D21">o</span>f <span style="color:#DD1D21">Va</span>riance.</b></div>
+<div class="fbox">
+<div class="ft">Key Idea</div>
+ANOVA tests: "Are all group means equal, or is at least one different?"<br>
+It works by comparing <b>variance between groups</b>${helpTip('How much the group means differ from each other.')} to <b>variance within groups</b>${helpTip('How much the data points within each group vary around their own group mean.')}.<br>
+If the between-group variance is <b>much larger</b> than the within-group variance, the group means are likely truly different.
+</div>`;
+['s1mu1','s1mu2a','s1mu2b','s1ngrp'].forEach(id=>document.getElementById(id).addEventListener('input',drawS1));
+drawS1();
+}
+function drawS1(){
+const mu1=+document.getElementById('s1mu1').value;
+document.getElementById('s1mu1V').textContent=mu1.toFixed(1);
+{const cv=document.getElementById('s1cv1');const{c,W,H}=sCV(cv,170);const pL=35,pR=12,pT=16,pB=22;
+const sig=3,xMn=56,xMx=78;const mY=nP(mu1,mu1,sig)*1.3;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,mY,'inches');
+drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,mY,x=>nP(x,mu1,sig),'#DD1D21',2.5,null,'rgba(221,29,33,0.1)');
+vLine(c,tX,ph,pT,66,'#008443','66"',[4,3]);vLine(c,tX,ph,pT,mu1,'#DD1D21','x̄');
+// Raindrop dots
+const seed=42;for(let i=0;i<15;i++){const v=mu1+sig*Math.sin(seed+i*7.3)*0.8;const px=tX(v);const py=pT+20+Math.random()*(ph-30);c.beginPath();c.arc(px,py,3,0,2*Math.PI);c.fillStyle='rgba(221,29,33,0.35)';c.fill();}
+document.getElementById('s1t1').textContent=`t = ${((mu1-66)/(sig/Math.sqrt(15))).toFixed(3)}`;}
+
+const mu2a=+document.getElementById('s1mu2a').value,mu2b=+document.getElementById('s1mu2b').value;
+document.getElementById('s1mu2aV').textContent=mu2a.toFixed(1);document.getElementById('s1mu2bV').textContent=mu2b.toFixed(1);
+{const cv=document.getElementById('s1cv2');const{c,W,H}=sCV(cv,170);const pL=35,pR=12,pT=16,pB=22;
+const sig=3,xMn=56,xMx=78;const mY=Math.max(nP(mu2a,mu2a,sig),nP(mu2b,mu2b,sig))*1.3;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,mY,'inches');
+drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,mY,x=>nP(x,mu2a,sig),'#DD1D21',2.5,null,'rgba(221,29,33,0.08)');
+drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,mY,x=>nP(x,mu2b,sig),'#009EB4',2.5,null,'rgba(0,158,180,0.08)');
+for(let g=0;g<2;g++){const mu=g===0?mu2a:mu2b;for(let i=0;i<10;i++){const v=mu+sig*Math.sin(42+g*100+i*7.3)*0.8;const px=tX(v);const py=pT+20+Math.random()*(ph-30);c.beginPath();c.arc(px,py,3,0,2*Math.PI);c.fillStyle=g===0?'rgba(221,29,33,0.3)':'rgba(0,158,180,0.3)';c.fill();}}
+document.getElementById('s1t2').textContent=`t = ${((mu2a-mu2b)/(sig*Math.sqrt(2/15))).toFixed(3)}`;}
+
+const ngrp=+document.getElementById('s1ngrp').value;document.getElementById('s1ngrpV').textContent=ngrp;
+{const cv=document.getElementById('s1cv3');const{c,W,H}=sCV(cv,170);const pL=35,pR=12,pT=16,pB=22;
+const sig=3,xMn=56,xMx=78;const means=[64,67,70,63,71].slice(0,ngrp);
+let maxY=0;means.forEach(m=>maxY=Math.max(maxY,nP(m,m,sig)));maxY*=1.3;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,maxY,'inches');
+means.forEach((m,i)=>{drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,x=>nP(x,m,sig),GC[i],2.5,null,GCa[i]+'0.08)');
+for(let j=0;j<8;j++){const v=m+sig*Math.sin(42+i*100+j*7.3)*0.8;const px=tX(v);const py=pT+20+Math.random()*(ph-30);c.beginPath();c.arc(px,py,3,0,2*Math.PI);c.fillStyle=GCa[i]+'0.35)';c.fill();}});
+const gm=mn(means);vLine(c,tX,ph,pT,gm,'#EB8705','Grand Mean',[5,3]);
+const n0=10,N=n0*ngrp,ssb=means.reduce((s,m)=>s+n0*(m-gm)*(m-gm),0),ssw=ngrp*n0*sig*sig*(n0-1)/n0,msb=ssb/(ngrp-1),msw=ssw/(N-ngrp),Fv=msb/msw;
+document.getElementById('s1f').textContent=`F = ${Fv.toFixed(3)}`;}}
+
+// ===========================
+// SECTION 2
+// ===========================
+let s2Inited=false;let s2QuizAnswered=[false,false,false,false];
+function initS2(){
+if(s2Inited){drawS2();return;}
+s2Inited=true;
+const el=document.getElementById('s2');
+el.innerHTML=`
+<h2>📐 The Hypotheses</h2>
+<div class="hyp-box">
+<b>H₀:</b> μ₁ = μ₂ = μ₃ &nbsp; <span style="color:#666;font-size:0.8em">(all group means are equal)</span><br>
+<b>H₁:</b> At least one μᵢ is different
+</div>
+<h3>Interactive Demo — Move Each Group Mean</h3>
+<p style="margin-bottom:10px">Move each group's mean using the sliders below. Watch the hypothesis indicator change in real time.</p>
+<div class="flex-row">
+<div class="flex-1">
+<div class="canvas-wrap"><canvas id="s2cv" style="width:100%;height:260px;border:1px solid #ddd;border-radius:8px"></canvas></div>
+<div style="text-align:center;margin:8px 0" id="s2indicator"></div>
+</div>
+<div style="min-width:220px">
+<div class="cg" style="border-color:#DD1D21"><label style="color:#DD1D21">μ₁ (Group 1)</label><div class="sr"><input type="range" id="s2m1" min="30" max="70" step="0.5" value="50" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s2m1V">50.0</span></div></div>
+<div class="cg" style="border-color:#009EB4"><label style="color:#009EB4">μ₂ (Group 2)</label><div class="sr"><input type="range" id="s2m2" min="30" max="70" step="0.5" value="50" style="accent-color:#009EB4"><span class="val" style="color:#009EB4" id="s2m2V">50.0</span></div></div>
+<div class="cg" style="border-color:#EB8705"><label style="color:#EB8705">μ₃ (Group 3)</label><div class="sr"><input type="range" id="s2m3" min="30" max="70" step="0.5" value="50" style="accent-color:#EB8705"><span class="val" style="color:#EB8705" id="s2m3V">50.0</span></div></div>
+</div>
+</div>
+<div class="callout" style="font-size:0.95em"><b>⚠️ Notice:</b> H₁ does NOT mean <em>all</em> means are different from each other. Even if only <b>ONE</b> group differs, we reject H₀.</div>
+<h3>Quick Quiz — Which configurations represent H₁?</h3>
+<p style="margin-bottom:10px">Click on each scenario to check your answer:</p>
+<div class="grid-2x2" id="s2quiz">
+<div class="quiz-q" id="s2q0" onclick="checkS2Quiz(0)"><div class="qtext">A: μ₁=50, μ₂=50, μ₃=50</div><div id="s2q0fb" class="quiz-fb"></div></div>
+<div class="quiz-q" id="s2q1" onclick="checkS2Quiz(1)"><div class="qtext">B: μ₁=50, μ₂=55, μ₃=50</div><div id="s2q1fb" class="quiz-fb"></div></div>
+<div class="quiz-q" id="s2q2" onclick="checkS2Quiz(2)"><div class="qtext">C: μ₁=40, μ₂=50, μ₃=60</div><div id="s2q2fb" class="quiz-fb"></div></div>
+<div class="quiz-q" id="s2q3" onclick="checkS2Quiz(3)"><div class="qtext">D: μ₁=45, μ₂=45, μ₃=55</div><div id="s2q3fb" class="quiz-fb"></div></div>
+</div>`;
+['s2m1','s2m2','s2m3'].forEach(id=>document.getElementById(id).addEventListener('input',drawS2));
+drawS2();
+}
+function checkS2Quiz(idx){
+if(s2QuizAnswered[idx])return;s2QuizAnswered[idx]=true;
+const answers=[false,true,true,true];
+const fb=document.getElementById('s2q'+idx+'fb'),card=document.getElementById('s2q'+idx);
+if(answers[idx]){fb.innerHTML='<span style="color:#008443;font-weight:700">✅ Correct! This is H₁ — at least one mean differs.</span>';card.style.borderColor='#008443';}
+else{fb.innerHTML='<span style="color:#DD1D21;font-weight:700">❌ This is actually H₀ — all means are equal!</span>';card.style.borderColor='#DD1D21';}}
+function drawS2(){
+const m1=+document.getElementById('s2m1').value,m2=+document.getElementById('s2m2').value,m3=+document.getElementById('s2m3').value;
+document.getElementById('s2m1V').textContent=m1.toFixed(1);document.getElementById('s2m2V').textContent=m2.toFixed(1);document.getElementById('s2m3V').textContent=m3.toFixed(1);
+const cv=document.getElementById('s2cv');const{c,W,H}=sCV(cv,260);
+const pL=45,pR=15,pT=24,pB=26,sig=4;
+const xMn=Math.min(m1,m2,m3)-4*sig,xMx=Math.max(m1,m2,m3)+4*sig;
+let maxY=0;[m1,m2,m3].forEach(m=>maxY=Math.max(maxY,nP(m,m,sig)));maxY*=1.3;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,maxY,'');
+[m1,m2,m3].forEach((m,i)=>{
+drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,x=>nP(x,m,sig),GC[i],2.5,null,GCa[i]+'0.1)');
+vLine(c,tX,ph,pT,m,GC[i],'μ'+(i+1)+'='+m.toFixed(1));
+// Raindrop dots
+for(let j=0;j<12;j++){const v=m+sig*rn()*0.6;const px=tX(v);if(px<pL||px>pL+pw)continue;const py=pT+30+j*(ph-40)/12;c.beginPath();c.arc(px,py,3.5,0,2*Math.PI);c.fillStyle=GCa[i]+'0.3)';c.fill();}
+});
+const tol=1.5,allEq=Math.abs(m1-m2)<tol&&Math.abs(m2-m3)<tol&&Math.abs(m1-m3)<tol;
+document.getElementById('s2indicator').innerHTML=allEq?'<span class="indicator green">✅ H₀ is true — all means are approximately equal</span>':'<span class="indicator red">❌ H₁ is true — at least one mean differs</span>';}
+
+// ===========================
+// SECTION 3
+// ===========================
+let s3Inited=false,s3Seed=42;
+function initS3(){
+if(s3Inited){drawS3();return;}
+s3Inited=true;
+const el=document.getElementById('s3');
+el.innerHTML=`
+<h2>📊 Between-Group vs. Within-Group Variance</h2>
+<p style="margin-bottom:12px">ANOVA compares two types of variance${helpTip('Variance measures how spread out values are. ANOVA decomposes total variance into between-group and within-group components.')}. The 2×2 grid shows four scenarios, then explore freely with the sliders below.</p>
+<h3>2×2 Scenario Grid</h3>
+<div class="grid-2x2" id="s3grid">
+<div class="canvas-wrap"><canvas id="s3cvA" style="height:220px"></canvas><div class="clab">A: Low Between · Low Within → Fail to reject</div></div>
+<div class="canvas-wrap"><canvas id="s3cvB" style="height:220px"></canvas><div class="clab">B: Low Between · High Within → Fail to reject</div></div>
+<div class="canvas-wrap"><canvas id="s3cvC" style="height:220px"></canvas><div class="clab">C: High Between · Low Within → REJECT H₀</div></div>
+<div class="canvas-wrap"><canvas id="s3cvD" style="height:220px"></canvas><div class="clab">D: High Between · High Within → Maybe reject</div></div>
+</div>
+<h3>Interactive Explorer</h3>
+<div class="flex-row">
+<div style="min-width:250px">
+<div class="cg" style="border-color:#008443"><label style="color:#008443">Between-Group Spread${helpTip('Moves the group means apart or together. Higher = means more different.')}</label><div class="desc">Moves group means apart</div><div class="sr"><input type="range" id="s3bet" min="0" max="20" step="0.5" value="8" style="accent-color:#008443"><span class="val" style="color:#008443" id="s3betV">8.0</span></div></div>
+<div class="cg" style="border-color:#DD1D21"><label style="color:#DD1D21">Within-Group Spread${helpTip('How spread out the data points are within each group. Higher = more overlap.')}</label><div class="desc">Spreads points within groups</div><div class="sr"><input type="range" id="s3wit" min="1" max="15" step="0.5" value="4" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s3witV">4.0</span></div></div>
+<div class="cg" style="border-color:#009EB4"><label style="color:#009EB4">Sample Size per Group</label><div class="sr"><input type="range" id="s3n" min="5" max="30" step="1" value="10" style="accent-color:#009EB4"><span class="val" style="color:#009EB4" id="s3nV">10</span></div></div>
+<button class="btn gn" onclick="s3Seed=Date.now();drawS3()" style="margin-top:8px;width:100%">🎲 Reseed Data</button>
+</div>
+<div class="flex-1">
+<div class="canvas-wrap"><canvas id="s3cvMain" style="height:400px"></canvas><div class="clab">Groups with Between (green) & Within (red) Arrows</div></div>
+</div>
+</div>
+<div class="rrow" id="s3stats">
+<div class="card"><div class="cl">SSB${helpTip('Sum of Squares Between: measures variation of group means around grand mean.')}</div><div class="cv c-g" id="s3SSB">—</div></div>
+<div class="card"><div class="cl">SSW${helpTip('Sum of Squares Within: measures variation of data points around their group means.')}</div><div class="cv c-r" id="s3SSW">—</div></div>
+<div class="card"><div class="cl">MSB</div><div class="cv c-g" id="s3MSB">—</div></div>
+<div class="card"><div class="cl">MSW</div><div class="cv c-r" id="s3MSW">—</div></div>
+<div class="card"><div class="cl">F${helpTip('F = MSB/MSW. Large F means group means differ more than expected by chance.')}</div><div class="cv c-o" id="s3F">—</div></div>
+<div class="card"><div class="cl">p-value${helpTip('Probability of getting an F this large if H₀ is true. Small p → reject H₀.')}</div><div class="cv c-p" id="s3P">—</div></div>
+</div>
+<div id="s3desc" style="text-align:center;font-size:1em;font-weight:600;margin:8px 0;min-height:24px"></div>
+<div class="dbox nrej" id="s3dec"><div class="vd" id="s3verdict">Adjust sliders to explore</div><div class="vdd" id="s3verdDet"></div></div>
+<div class="lrow">
+<div class="li"><div class="lsw" style="background:#EB8705"></div>Grand Mean</div>
+<div class="li"><div class="lsw" style="background:#008443"></div>Between arrows</div>
+<div class="li"><div class="lsw" style="background:rgba(221,29,33,0.5)"></div>Within arrows</div>
+</div>
+<div class="fbox">
+<div class="ft">Core ANOVA Formula</div>
+<span class="g">F = MSB / MSW = (SSB / (k−1)) / (SSW / (N−k))</span>
+<b>Where:</b> k = number of groups, N = total observations<br>
+<b>SSB</b> = Σ nᵢ · (x̄ᵢ − x̄)² &nbsp; (between-group sum of squares)<br>
+<b>SSW</b> = Σ Σ (xᵢⱼ − x̄ᵢ)² &nbsp; (within-group sum of squares)<br>
+<span class="m" id="s3formula"></span>
+</div>`;
+['s3bet','s3wit','s3n'].forEach(id=>document.getElementById(id).addEventListener('input',drawS3));
+drawS3();
+}
+function genGroupData(grpMeans,sigma,nPerGrp,seed){
+const groups=[];
+grpMeans.forEach((m,g)=>{const pts=[];for(let i=0;i<nPerGrp;i++){let s1=seed+g*1000+i*2;let u1=((Math.sin(s1)*43758.5453)%1+1)%1||0.5;let u2=((Math.sin(s1+1)*43758.5453)%1+1)%1||0.5;u1=Math.max(0.001,u1);const z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);pts.push(m+sigma*z);}groups.push(pts);});return groups;}
+function drawScenario(cvId,betSep,witSig){
+const cv=document.getElementById(cvId);const{c,W,H}=sCV(cv,220);
+const pL=40,pR=12,pT=22,pB=24;
+const means=[50-betSep,50,50+betSep],nPG=8;
+const data=genGroupData(means,witSig,nPG,s3Seed+betSep*100+witSig*10);
+const allPts=data.flat();const gm=mn(allPts);
+const xMn=Math.min(...allPts,gm)-6,xMx=Math.max(...allPts,gm)+6;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,1,'');
+const gmPx=tX(gm);c.setLineDash([5,3]);c.beginPath();c.moveTo(gmPx,pT);c.lineTo(gmPx,pT+ph);c.strokeStyle='#EB8705';c.lineWidth=2;c.stroke();c.setLineDash([]);
+data.forEach((pts,g)=>{const grpMean=mn(pts);const grpMPx=tX(grpMean);const yBase=pT+35+g*(ph-50)/3;
+c.beginPath();c.moveTo(grpMPx,yBase-10);c.lineTo(grpMPx,yBase+14);c.strokeStyle=GC[g];c.lineWidth=2.5;c.stroke();
+c.beginPath();c.moveTo(grpMPx,yBase+3);c.lineTo(gmPx,yBase+3);c.strokeStyle='#008443';c.lineWidth=1.5;c.stroke();
+pts.forEach(pt=>{const px=tX(pt);c.beginPath();c.moveTo(px,yBase);c.lineTo(grpMPx,yBase);c.strokeStyle='rgba(221,29,33,0.25)';c.lineWidth=1;c.stroke();
+c.beginPath();c.arc(px,yBase,3.5,0,2*Math.PI);c.fillStyle=GCa[g]+'0.7)';c.fill();});});
+const k=3,N=nPG*k,grpMeans=data.map(mn);
+const ssb=data.reduce((s,pts,g)=>s+pts.length*(grpMeans[g]-gm)**2,0);
+const ssw=data.reduce((s,pts,g)=>s+pts.reduce((s2,x)=>s2+(x-grpMeans[g])**2,0),0);
+const Fv=(ssb/(k-1))/(ssw/(N-k));const pv=1-fCDF(Fv,k-1,N-k);
+c.fillStyle='#333';c.font='bold 12px sans-serif';c.textAlign='left';c.fillText(`F = ${Fv.toFixed(2)}`,pL+4,H-6);
+c.fillStyle=pv<0.05?'#DD1D21':'#008443';c.textAlign='right';c.fillText(pv<0.05?`Reject H₀ (p=${pv.toFixed(3)})`:`Fail to reject (p=${pv.toFixed(3)})`,pL+pw-4,H-6);}
+function drawS3(){
+const bet=+document.getElementById('s3bet').value,wit=+document.getElementById('s3wit').value,nPG=+document.getElementById('s3n').value;
+document.getElementById('s3betV').textContent=bet.toFixed(1);document.getElementById('s3witV').textContent=wit.toFixed(1);document.getElementById('s3nV').textContent=nPG;
+drawScenario('s3cvA',1,2);drawScenario('s3cvB',1,8);drawScenario('s3cvC',10,2);drawScenario('s3cvD',10,8);
+const means=[50-bet,50,50+bet];const data=genGroupData(means,wit,nPG,s3Seed);
+const allPts=data.flat(),gm=mn(allPts),k=3,N=nPG*k,grpMeans=data.map(mn);
+const ssb=data.reduce((s,pts,g)=>s+pts.length*(grpMeans[g]-gm)**2,0);
+const ssw=data.reduce((s,pts,g)=>s+pts.reduce((s2,x)=>s2+(x-grpMeans[g])**2,0),0);
+const msb=ssb/(k-1),msw=ssw/(N-k),Fv=msw>0?msb/msw:0;
+const pv=Fv>0?1-fCDF(Fv,k-1,N-k):1,rej=pv<0.05;
+document.getElementById('s3SSB').textContent=ssb.toFixed(2);document.getElementById('s3SSW').textContent=ssw.toFixed(2);
+document.getElementById('s3MSB').textContent=msb.toFixed(2);document.getElementById('s3MSW').textContent=msw.toFixed(2);
+document.getElementById('s3F').textContent=Fv.toFixed(4);document.getElementById('s3P').textContent=pv.toFixed(4);
+document.getElementById('s3desc').innerHTML=`Between-group: <b style="color:#008443">${bet>6?'HIGH':'LOW'}</b> &nbsp;|&nbsp; Within-group: <b style="color:#DD1D21">${wit>7?'HIGH':'LOW'}</b> &nbsp;|&nbsp; F = <b style="color:#EB8705">${Fv.toFixed(2)}</b> (${Fv>3?'LARGE':'SMALL'})`;
+const dec=document.getElementById('s3dec');dec.className=rej?'dbox rej':'dbox nrej';
+document.getElementById('s3verdict').textContent=rej?`REJECT H₀ (F=${Fv.toFixed(3)}, p=${pv.toFixed(4)} < 0.05)`:`FAIL TO REJECT H₀ (F=${Fv.toFixed(3)}, p=${pv.toFixed(4)} ≥ 0.05)`;
+document.getElementById('s3verdDet').textContent=rej?'Evidence that at least one group mean differs.':'Not enough evidence to conclude means differ.';
+document.getElementById('s3formula').textContent=`F = (${ssb.toFixed(2)} / ${k-1}) / (${ssw.toFixed(2)} / ${N-k}) = ${msb.toFixed(2)} / ${msw.toFixed(2)} = ${Fv.toFixed(4)}`;
+// Main canvas
+const cv=document.getElementById('s3cvMain');const{c,W,H}=sCV(cv,400);
+const pL=50,pR=18,pT=26,pB=40;
+const xMn=Math.min(...allPts,gm)-6,xMx=Math.max(...allPts,gm)+6;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,1,'Value');
+const gmPx=tX(gm);c.setLineDash([7,4]);c.beginPath();c.moveTo(gmPx,pT);c.lineTo(gmPx,pT+ph);c.strokeStyle='#EB8705';c.lineWidth=2.5;c.stroke();c.setLineDash([]);
+c.fillStyle='#EB8705';c.font='bold 12px sans-serif';c.textAlign='center';c.fillText(`Grand Mean = ${gm.toFixed(1)}`,gmPx,pT-6);
+data.forEach((pts,g)=>{const grpMean=grpMeans[g],grpMPx=tX(grpMean),bandH=ph/k,yCenter=pT+bandH*(g+0.5);
+c.beginPath();c.moveTo(grpMPx,yCenter-bandH*0.38);c.lineTo(grpMPx,yCenter+bandH*0.38);c.strokeStyle=GC[g];c.lineWidth=3.5;c.stroke();
+c.fillStyle=GC[g];c.font='bold 11px sans-serif';c.textAlign='center';c.fillText(`x̄${g+1} = ${grpMean.toFixed(1)}`,grpMPx,yCenter-bandH*0.38-6);
+// Between arrow
+c.beginPath();c.moveTo(grpMPx,yCenter+bandH*0.2);c.lineTo(gmPx,yCenter+bandH*0.2);c.strokeStyle='#008443';c.lineWidth=2;c.stroke();
+const dir=gmPx>grpMPx?1:-1;if(Math.abs(gmPx-grpMPx)>8){c.beginPath();c.moveTo(gmPx,yCenter+bandH*0.2);c.lineTo(gmPx-dir*8,yCenter+bandH*0.2-5);c.lineTo(gmPx-dir*8,yCenter+bandH*0.2+5);c.closePath();c.fillStyle='#008443';c.fill();}
+pts.forEach((pt,pi)=>{const px=tX(pt),jitter=(pi-pts.length/2)*2.5,py=yCenter+jitter;
+c.beginPath();c.moveTo(px,py);c.lineTo(grpMPx,py);c.strokeStyle='rgba(221,29,33,0.28)';c.lineWidth=1;c.stroke();
+c.beginPath();c.arc(px,py,4,0,2*Math.PI);c.fillStyle=GCa[g]+'0.8)';c.fill();c.strokeStyle=GC[g];c.lineWidth=0.7;c.stroke();});});
+// F gauge
+const gaugeY=pT+ph+12,gaugeH=14;const fcrit=fInv(0.95,k-1,N-k);const maxF=Math.max(Fv,fcrit)*1.5;
+const critPx=pL+(fcrit/maxF)*pw,fPx=pL+(Math.min(Fv,maxF)/maxF)*pw;
+c.fillStyle='rgba(0,132,67,0.08)';c.fillRect(pL,gaugeY,critPx-pL,gaugeH);
+c.fillStyle='rgba(221,29,33,0.15)';c.fillRect(critPx,gaugeY,pL+pw-critPx,gaugeH);
+c.strokeStyle='#ddd';c.lineWidth=1;c.strokeRect(pL,gaugeY,pw,gaugeH);
+c.beginPath();c.moveTo(critPx,gaugeY-3);c.lineTo(critPx,gaugeY+gaugeH+3);c.strokeStyle='#DD1D21';c.lineWidth=2;c.stroke();
+c.fillStyle='#DD1D21';c.font='10px sans-serif';c.textAlign='center';c.fillText(`F_crit=${fcrit.toFixed(2)}`,critPx,gaugeY+gaugeH+13);
+c.beginPath();c.arc(fPx,gaugeY+gaugeH/2,6,0,2*Math.PI);c.fillStyle=rej?'#DD1D21':'#008443';c.fill();c.strokeStyle='#fff';c.lineWidth=1.5;c.stroke();
+c.fillStyle=rej?'#DD1D21':'#008443';c.font='bold 10px sans-serif';c.textAlign='center';c.fillText(`F=${Fv.toFixed(2)}`,fPx,gaugeY-6);}
+
+// ===========================
+// SECTION 4
+// ===========================
+let s4Inited=false;
+function initS4(){
+if(s4Inited){drawS4();return;}
+s4Inited=true;
+const el=document.getElementById('s4');
+el.innerHTML=`
+<h2>⚖️ The Equal Variance Assumption</h2>
+<p style="margin-bottom:12px">One key assumption of ANOVA is that all groups have approximately equal variance${helpTip('Called "homogeneity of variances" or "homoscedasticity". Ensures the F-test is valid.')}. Adjust each group's standard deviation independently to see when the assumption is met or violated.</p>
+<div class="flex-row">
+<div style="min-width:240px">
+<div class="cg" style="border-color:#DD1D21"><label style="color:#DD1D21">σ₁ (Group 1 Std Dev)</label><div class="sr"><input type="range" id="s4s1" min="1" max="15" step="0.5" value="4" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s4s1V">4.0</span></div></div>
+<div class="cg" style="border-color:#009EB4"><label style="color:#009EB4">σ₂ (Group 2 Std Dev)</label><div class="sr"><input type="range" id="s4s2" min="1" max="15" step="0.5" value="4" style="accent-color:#009EB4"><span class="val" style="color:#009EB4" id="s4s2V">4.0</span></div></div>
+<div class="cg" style="border-color:#EB8705"><label style="color:#EB8705">σ₃ (Group 3 Std Dev)</label><div class="sr"><input type="range" id="s4s3" min="1" max="15" step="0.5" value="4" style="accent-color:#EB8705"><span class="val" style="color:#EB8705" id="s4s3V">4.0</span></div></div>
+</div>
+<div class="flex-1">
+<div class="canvas-wrap"><canvas id="s4cv" style="height:300px"></canvas><div class="clab">Group Distributions (different spreads)</div></div>
+</div>
+</div>
+<div class="rrow">
+<div class="card"><div class="cl">σ₁²</div><div class="cv c-r" id="s4v1">16.0</div></div>
+<div class="card"><div class="cl">σ₂²</div><div class="cv c-b" id="s4v2">16.0</div></div>
+<div class="card"><div class="cl">σ₃²</div><div class="cv c-o" id="s4v3">16.0</div></div>
+<div class="card"><div class="cl">Max / Min Ratio</div><div class="cv c-p" id="s4ratio">1.0</div></div>
+</div>
+<div id="s4check" style="text-align:center;margin:8px 0"></div>
+<div class="callout"><b>Rule of thumb:</b> The largest group variance should be no more than about <b>4×</b> the smallest. If it exceeds this, consider Welch's ANOVA or a non-parametric alternative like the Kruskal-Wallis test.</div>`;
+['s4s1','s4s2','s4s3'].forEach(id=>document.getElementById(id).addEventListener('input',drawS4));
+drawS4();
+}
+function drawS4(){
+const s1=+document.getElementById('s4s1').value,s2=+document.getElementById('s4s2').value,s3=+document.getElementById('s4s3').value;
+document.getElementById('s4s1V').textContent=s1.toFixed(1);document.getElementById('s4s2V').textContent=s2.toFixed(1);document.getElementById('s4s3V').textContent=s3.toFixed(1);
+const v1=s1*s1,v2=s2*s2,v3=s3*s3;
+document.getElementById('s4v1').textContent=v1.toFixed(1);document.getElementById('s4v2').textContent=v2.toFixed(1);document.getElementById('s4v3').textContent=v3.toFixed(1);
+const maxV=Math.max(v1,v2,v3),minV=Math.min(v1,v2,v3),ratio=minV>0?maxV/minV:Infinity;
+document.getElementById('s4ratio').textContent=ratio.toFixed(2);
+document.getElementById('s4check').innerHTML=ratio<=4?'<span class="indicator green">✅ Assumption met — variances approximately equal (ratio ≤ 4)</span>':'<span class="indicator red">❌ Assumption VIOLATED — variances too different (ratio > 4)!</span>';
+const cv=document.getElementById('s4cv');const{c,W,H}=sCV(cv,300);
+const pL=45,pR=15,pT=20,pB=26,means=[45,50,55],sigs=[s1,s2,s3],maxSig=Math.max(s1,s2,s3);
+const xMn=Math.min(...means)-4*maxSig,xMx=Math.max(...means)+4*maxSig;
+let maxY=0;means.forEach((m,i)=>maxY=Math.max(maxY,nP(m,m,sigs[i])));maxY*=1.25;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,maxY,'');
+means.forEach((m,i)=>{drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,x=>nP(x,m,sigs[i]),GC[i],2.5,null,GCa[i]+'0.1)');
+c.fillStyle=GC[i];c.font='bold 11px sans-serif';c.textAlign='center';c.fillText(`Group ${i+1}: σ=${sigs[i].toFixed(1)}`,tX(m),pT+14+i*14);
+// Raindrop dots
+for(let j=0;j<15;j++){const v=m+sigs[i]*rn()*0.7;const px=tX(v);if(px<pL||px>pL+pw)continue;const py=pT+50+j*(ph-60)/15;c.beginPath();c.arc(px,py,3,0,2*Math.PI);c.fillStyle=GCa[i]+'0.3)';c.fill();}});}
+
+// ===========================
+// SECTION 5
+// ===========================
+let s5Inited=false,s5Step=0;
+const s5Data=[[64,66,68,65,67],[70,72,69,71,73],[62,64,61,63,60]];
+const s5Labels=['US','Canada','Mexico'];
+function initS5(){
+if(s5Inited)return;s5Inited=true;
+const el=document.getElementById('s5');
+const allD=s5Data.flat(),gMeans=s5Data.map(mn),grandMean=mn(allD);
+const k=3,N=allD.length;
+const ssb=s5Data.reduce((s,g,i)=>s+g.length*(gMeans[i]-grandMean)**2,0);
+const ssw=s5Data.reduce((s,g,i)=>s+g.reduce((s2,x)=>s2+(x-gMeans[i])**2,0),0);
+const sst=allD.reduce((s,x)=>s+(x-grandMean)**2,0);
+const dfB=k-1,dfW=N-k,dfT=N-1,msb=ssb/dfB,msw=ssw/dfW,Fv=msb/msw,pv=1-fCDF(Fv,dfB,dfW);
+el.innerHTML=`
+<h2>🧮 Calculating F Step by Step</h2>
+<p style="margin-bottom:12px">Walk through a complete ANOVA calculation with real data. Click "Next Step" to proceed one step at a time.</p>
+<h3>Dataset: Heights (inches) by Country</h3>
+<table class="anova-table" id="s5dataTable">
+<tr><th>Obs</th><th style="color:#DD1D21">🇺🇸 US</th><th style="color:#009EB4">🇨🇦 Canada</th><th style="color:#EB8705">🇲🇽 Mexico</th></tr>
+${s5Data[0].map((v,i)=>`<tr><td>${i+1}</td><td>${s5Data[0][i]}</td><td>${s5Data[1][i]}</td><td>${s5Data[2][i]}</td></tr>`).join('')}
+</table>
+<div style="display:flex;gap:10px;align-items:center;margin:12px 0;flex-wrap:wrap">
+<button class="btn bl" onclick="s5Prev()">◀ Previous</button>
+<button class="btn" onclick="s5Next()">Next Step ▶</button>
+<span style="font-size:0.9em;color:#666;font-weight:600" id="s5stepLabel">Step 0 of 9</span>
+<button class="btn or sm" onclick="s5ShowTable()">📋 Show ANOVA Table</button>
+</div>
+<div class="step-box" id="s5box"><h4>Click "Next Step" to begin the calculation</h4><p>We'll compute the F-statistic from scratch, one step at a time.</p></div>
+<div class="canvas-wrap" id="s5canvasWrap" style="display:none"><canvas id="s5cv" style="height:240px"></canvas><div class="clab">F-Distribution with Computed F</div></div>
+<div id="s5anovaTableWrap" style="display:none">
+<h3>Complete ANOVA Summary Table</h3>
+<table class="anova-table">
+<tr><th>Source</th><th>SS</th><th>df</th><th>MS</th><th>F</th><th>p-value</th></tr>
+<tr><td><b>Between</b></td><td>${ssb.toFixed(2)}</td><td>${dfB}</td><td>${msb.toFixed(2)}</td><td>${Fv.toFixed(4)}</td><td>${pv.toFixed(4)}</td></tr>
+<tr><td><b>Within</b></td><td>${ssw.toFixed(2)}</td><td>${dfW}</td><td>${msw.toFixed(2)}</td><td></td><td></td></tr>
+<tr><td><b>Total</b></td><td>${sst.toFixed(2)}</td><td>${dfT}</td><td></td><td></td><td></td></tr>
+</table></div>`;
+s5Step=0;}
+function s5ShowTable(){document.getElementById('s5anovaTableWrap').style.display='block';}
+function s5Next(){s5Step=Math.min(9,s5Step+1);renderS5Step();}
+function s5Prev(){s5Step=Math.max(0,s5Step-1);renderS5Step();}
+function renderS5Step(){
+document.getElementById('s5stepLabel').textContent=`Step ${s5Step} of 9`;
+const box=document.getElementById('s5box');
+const gMeans=s5Data.map(mn),allD=s5Data.flat(),grandMean=mn(allD);
+const k=3,N=allD.length;
+const ssb=s5Data.reduce((s,g,i)=>s+g.length*(gMeans[i]-grandMean)**2,0);
+const ssw=s5Data.reduce((s,g,i)=>s+g.reduce((s2,x)=>s2+(x-gMeans[i])**2,0),0);
+const dfB=k-1,dfW=N-k,msb=ssb/dfB,msw=ssw/dfW,Fv=msb/msw,pv=1-fCDF(Fv,dfB,dfW);
+const steps={
+0:{title:'Ready',html:'<p>Click "Next Step" to begin the step-by-step calculation.</p>'},
+1:{title:'Step 1: Calculate Each Group Mean',html:`
+<p style="color:#DD1D21"><b>x̄₁ (US)</b> = (${s5Data[0].join(' + ')})/5 = <b>${gMeans[0].toFixed(1)}</b></p>
+<p style="color:#009EB4"><b>x̄₂ (Canada)</b> = (${s5Data[1].join(' + ')})/5 = <b>${gMeans[1].toFixed(1)}</b></p>
+<p style="color:#EB8705"><b>x̄₃ (Mexico)</b> = (${s5Data[2].join(' + ')})/5 = <b>${gMeans[2].toFixed(1)}</b></p>`},
+2:{title:'Step 2: Calculate the Grand Mean',html:`<p>Average of ALL ${N} data points combined:</p>
+<p><b>x̄ (grand)</b> = (${allD.join(' + ')}) / ${N} = <b style="color:#EB8705;font-size:1.15em">${grandMean.toFixed(2)}</b></p>`},
+3:{title:'Step 3: Between-Group Sum of Squares (SSB)',html:`<p><b>SSB = Σ nᵢ · (x̄ᵢ − x̄)²</b></p>
+<p>= 5×(${gMeans[0].toFixed(1)} − ${grandMean.toFixed(2)})² + 5×(${gMeans[1].toFixed(1)} − ${grandMean.toFixed(2)})² + 5×(${gMeans[2].toFixed(1)} − ${grandMean.toFixed(2)})²</p>
+<p>= 5×${((gMeans[0]-grandMean)**2).toFixed(3)} + 5×${((gMeans[1]-grandMean)**2).toFixed(3)} + 5×${((gMeans[2]-grandMean)**2).toFixed(3)}</p>
+<p style="font-size:1.1em"><b style="color:#008443">SSB = ${ssb.toFixed(2)}</b></p>`},
+4:{title:'Step 4: Within-Group Sum of Squares (SSW)',html:`<p><b>SSW = Σ Σ (xᵢⱼ − x̄ᵢ)²</b></p>
+${s5Data.map((g,i)=>`<p style="color:${GC[i]}"><b>${s5Labels[i]}:</b> ${g.map(x=>`(${x}−${gMeans[i].toFixed(1)})²`).join(' + ')} = <b>${g.reduce((s,x)=>s+(x-gMeans[i])**2,0).toFixed(1)}</b></p>`).join('')}
+<p style="font-size:1.1em"><b style="color:#DD1D21">SSW = ${ssw.toFixed(2)}</b></p>`},
+5:{title:'Step 5: Degrees of Freedom',html:`<p><b>df_between</b> = k − 1 = 3 − 1 = <b>${dfB}</b></p>
+<p><b>df_within</b> = N − k = ${N} − 3 = <b>${dfW}</b></p>
+<p style="color:#666"><i>k = number of groups, N = total observations</i></p>`},
+6:{title:'Step 6: Mean Squares',html:`<p><b>MSB</b> = SSB / df_between = ${ssb.toFixed(2)} / ${dfB} = <b style="color:#008443;font-size:1.1em">${msb.toFixed(2)}</b></p>
+<p><b>MSW</b> = SSW / df_within = ${ssw.toFixed(2)} / ${dfW} = <b style="color:#DD1D21;font-size:1.1em">${msw.toFixed(2)}</b></p>`},
+7:{title:'Step 7: The F-Statistic!',html:`<p style="font-size:1.2em;text-align:center;margin:12px 0"><b>F = MSB / MSW = ${msb.toFixed(2)} / ${msw.toFixed(2)} = <span style="color:#EB8705;font-size:1.3em">${Fv.toFixed(4)}</span></b></p>
+<p style="text-align:center;color:#666"><i>The between-group variance is ${Fv.toFixed(1)}× larger than the within-group variance.</i></p>`},
+8:{title:'Step 8: Find the p-Value',html:`<p>Using the F(${dfB}, ${dfW}) distribution, we find the area to the right of F = ${Fv.toFixed(2)}:</p>
+<p style="font-size:1.15em;text-align:center"><b style="color:#641964">p-value = ${pv.toFixed(4)}</b></p>
+<p style="color:#666;text-align:center"><i>See the F-distribution chart below with the shaded p-value area.</i></p>`},
+9:{title:'Step 9: State the Conclusion',html:`<p>Comparing p-value to α = 0.05:</p>
+<p style="text-align:center;font-size:1.05em"><b>${pv.toFixed(4)} ${pv<0.05?'<':'≥'} 0.05</b></p>
+<p style="font-size:1.15em;font-weight:700;color:${pv<0.05?'#DD1D21':'#008443'};text-align:center;margin-top:8px">${pv<0.05?'→ REJECT H₀: At least one group mean is significantly different!':'→ FAIL TO REJECT H₀: Not enough evidence that means differ.'}</p>`}};
+const s=steps[s5Step];box.innerHTML=`<h4 style="color:#009EB4">${s.title}</h4>${s.html}`;
+if(s5Step>=8){
+document.getElementById('s5canvasWrap').style.display='block';
+const cv=document.getElementById('s5cv');const{c,W,H}=sCV(cv,240);
+const pL=45,pR=18,pT=22,pB=26,xMn=0,xMx=Math.max(Fv*1.5,8);
+let maxY=fPDF(Math.max(0.01,(dfB-2)/dfB*dfW/(dfW+2)),dfB,dfW)*1.3;if(!isFinite(maxY)||maxY<=0)maxY=0.5;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,maxY,'F');
+const fcrit=fInv(0.95,dfB,dfW);
+fillArea(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,fcrit,xMx,f=>fPDF(f,dfB,dfW),'rgba(221,29,33,0.2)');
+fillArea(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,Fv,xMx,f=>fPDF(f,dfB,dfW),'rgba(100,25,100,0.25)');
+drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,f=>fPDF(f,dfB,dfW),'#EB8705',3,null,null);
+vLine(c,tX,ph,pT,fcrit,'#DD1D21',`F_crit = ${fcrit.toFixed(2)}`);
+const fPx=tX(Fv);c.beginPath();c.moveTo(fPx,pT);c.lineTo(fPx,pT+ph);c.strokeStyle='#641964';c.lineWidth=3;c.stroke();
+c.beginPath();c.arc(fPx,pT+ph*0.3,7,0,2*Math.PI);c.fillStyle='#641964';c.fill();c.strokeStyle='#fff';c.lineWidth=2;c.stroke();
+c.fillStyle='#641964';c.font='bold 13px sans-serif';c.textAlign='center';c.fillText(`F = ${Fv.toFixed(2)}`,fPx,Math.max(pT+ph*0.3-15,pT+14));
+c.fillStyle='rgba(100,25,100,0.7)';c.font='11px sans-serif';c.textAlign='right';c.fillText(`p = ${pv.toFixed(4)}`,pL+pw-4,pT+16);
+}else{document.getElementById('s5canvasWrap').style.display='none';}}
+
+// ===========================
+// SECTION 6
+// ===========================
+let s6Inited=false;
+function initS6(){
+if(s6Inited){drawS6();return;}
+s6Inited=true;
+const el=document.getElementById('s6');
+el.innerHTML=`
+<h2>📈 The F-Distribution</h2>
+<p style="margin-bottom:12px">The F-distribution${helpTip('Named after Sir Ronald Fisher. Always right-skewed, starts at 0. Depends on two degrees of freedom: df₁ (numerator/between) and df₂ (denominator/within).')} determines the p-value in ANOVA. Explore how its shape changes with different degrees of freedom.</p>
+<div class="flex-row">
+<div style="min-width:260px">
+<div class="cg" style="border-color:#DD1D21"><label style="color:#DD1D21">df₁ (between) = k − 1${helpTip('More groups → higher df₁.')}</label><div class="sr"><input type="range" id="s6d1" min="1" max="20" step="1" value="2" style="accent-color:#DD1D21"><span class="val" style="color:#DD1D21" id="s6d1V">2</span></div></div>
+<div class="cg" style="border-color:#009EB4"><label style="color:#009EB4">df₂ (within) = N − k${helpTip('More data → higher df₂.')}</label><div class="sr"><input type="range" id="s6d2" min="3" max="100" step="1" value="12" style="accent-color:#009EB4"><span class="val" style="color:#009EB4" id="s6d2V">12</span></div></div>
+<div class="cg" style="border-color:#EB8705"><label style="color:#EB8705">Your F-statistic</label><div class="desc">Drag to see p-value change</div><div class="sr"><input type="range" id="s6f" min="0" max="10" step="0.05" value="3" style="accent-color:#EB8705"><span class="val" style="color:#EB8705" id="s6fV">3.00</span></div></div>
+<div class="cg" style="border-color:#641964"><label style="color:#641964">α (significance level)</label><div class="sr"><input type="range" id="s6a" min="0.01" max="0.20" step="0.01" value="0.05" style="accent-color:#641964"><span class="val" style="color:#641964" id="s6aV">0.05</span></div></div>
+</div>
+<div class="flex-1">
+<div class="canvas-wrap"><canvas id="s6cv" style="height:380px"></canvas><div class="clab">F-Distribution Curve</div></div>
+</div>
+</div>
+<div class="rrow">
+<div class="card"><div class="cl">F-statistic</div><div class="cv c-o" id="s6Fval">3.00</div></div>
+<div class="card"><div class="cl">F-critical</div><div class="cv c-r" id="s6Fc">—</div></div>
+<div class="card"><div class="cl">p-value</div><div class="cv c-p" id="s6Pv">—</div></div>
+<div class="card"><div class="cl">df₁, df₂</div><div class="cv c-b" id="s6df">2, 12</div></div>
+</div>
+<div class="dbox nrej" id="s6dec"><div class="vd" id="s6verdict">—</div></div>
+<div class="lrow">
+<div class="li"><div class="lsw" style="background:#EB8705"></div>F curve</div>
+<div class="li"><div class="lsw" style="background:rgba(221,29,33,0.3)"></div>α rejection region</div>
+<div class="li"><div class="lsw" style="background:rgba(100,25,100,0.3)"></div>p-value area</div>
+<div class="li"><div class="lsw" style="background:#641964"></div>Your F</div>
+</div>`;
+['s6d1','s6d2','s6f','s6a'].forEach(id=>document.getElementById(id).addEventListener('input',drawS6));
+drawS6();
+}
+function drawS6(){
+const d1=+document.getElementById('s6d1').value,d2=+document.getElementById('s6d2').value,fVal=+document.getElementById('s6f').value,alpha=+document.getElementById('s6a').value;
+document.getElementById('s6d1V').textContent=d1;document.getElementById('s6d2V').textContent=d2;
+document.getElementById('s6fV').textContent=fVal.toFixed(2);document.getElementById('s6aV').textContent=alpha.toFixed(2);
+const fcrit=fInv(1-alpha,d1,d2),pv=1-fCDF(fVal,d1,d2),rej=fVal>fcrit;
+document.getElementById('s6Fval').textContent=fVal.toFixed(3);document.getElementById('s6Fc').textContent=fcrit.toFixed(3);
+document.getElementById('s6Pv').textContent=pv.toFixed(4);document.getElementById('s6df').textContent=`${d1}, ${d2}`;
+const dec=document.getElementById('s6dec');dec.className=rej?'dbox rej':'dbox nrej';
+document.getElementById('s6verdict').textContent=rej?`REJECT H₀: F = ${fVal.toFixed(2)} > ${fcrit.toFixed(2)} (p = ${pv.toFixed(4)} < ${alpha})`:`FAIL TO REJECT H₀: F = ${fVal.toFixed(2)} ≤ ${fcrit.toFixed(2)} (p = ${pv.toFixed(4)} ≥ ${alpha})`;
+const cv=document.getElementById('s6cv');const{c,W,H}=sCV(cv,380);
+const pL=50,pR=18,pT=24,pB=30,xMn=0,xMx=Math.max(fVal*1.5,fcrit*1.5,6);
+let mode=d1>2?(d1-2)/d1*d2/(d2+2):0.01;let maxY=fPDF(Math.max(0.01,mode),d1,d2)*1.3;if(!isFinite(maxY)||maxY<=0)maxY=1;
+const{tX,tY,pw,ph}=dAx(c,W,H,pL,pR,pT,pB,xMn,xMx,maxY,'F');
+fillArea(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,fcrit,xMx,f=>fPDF(f,d1,d2),'rgba(221,29,33,0.18)');
+fillArea(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,0,fcrit,f=>fPDF(f,d1,d2),'rgba(0,132,67,0.06)');
+if(fVal>0.01)fillArea(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,fVal,xMx,f=>fPDF(f,d1,d2),'rgba(100,25,100,0.22)');
+drawCurve(c,pL,pR,pT,pB,W,H,xMn,xMx,maxY,f=>fPDF(f,d1,d2),'#EB8705',3,null,null);
+vLine(c,tX,ph,pT,fcrit,'#DD1D21',`F_crit = ${fcrit.toFixed(2)}`);
+const fPx=tX(fVal);c.beginPath();c.moveTo(fPx,pT);c.lineTo(fPx,pT+ph);c.strokeStyle='#641964';c.lineWidth=3;c.stroke();
+c.beginPath();c.arc(fPx,tY(fPDF(fVal,d1,d2)),8,0,2*Math.PI);c.fillStyle='#641964';c.fill();c.strokeStyle='#fff';c.lineWidth=2;c.stroke();
+c.fillStyle='#641964';c.font='bold 13px sans-serif';c.textAlign='center';c.fillText(`F = ${fVal.toFixed(2)}`,fPx,Math.max(tY(fPDF(fVal,d1,d2))-16,pT+16));
+c.fillStyle='#EB8705';c.font='bold 12px sans-serif';c.textAlign='left';c.fillText(`F(${d1}, ${d2})`,pL+6,pT+16);
+c.fillStyle='rgba(100,25,100,0.8)';c.font='11px sans-serif';c.textAlign='right';c.fillText(`p = ${pv.toFixed(4)}`,pL+pw-6,pT+16);
+c.fillStyle='rgba(221,29,33,0.7)';c.fillText(`α = ${alpha} rejection`,pL+pw-6,pT+30);}
+
+// ===========================
+// SECTION 7
+// ===========================
+let s7Inited=false,s7Data=null,s7Dots=[];
+function initS7(){
+if(s7Inited)return;s7Inited=true;
+const el=document.getElementById('s7');
+el.innerHTML=`<h2>🧪 Try It Yourself — Full Interactive Sandbox</h2>
+<p style="margin-bottom:12px">Set up your own ANOVA experiment. Choose groups, set means and variances, generate random data, and see the complete results including raindrop visualizations.</p>
+<div class="flex-row" style="align-items:flex-start">
+<div style="min-width:270px">
+<div class="cg" style="border-color:#EB8705"><label style="color:#EB8705">Number of Groups (k)</label><div class="sr"><input type="range" id="s7k" min="2" max="6" step="1" value="3" style="accent-color:#EB8705"><span class="val" style="color:#EB8705" id="s7kV">3</span></div></div>
+<div id="s7sliders"></div>
+<div style="display:flex;gap:8px;margin-top:10px">
+<button class="btn" onclick="s7Generate()" style="flex:1">🎲 Generate Data</button>
+<button class="btn bl" onclick="s7Randomize()" style="flex:1">🔀 Randomize</button>
+</div>
+</div>
+<div class="flex-1">
+<div class="canvas-wrap"><canvas id="s7cv" style="height:420px"></canvas><div class="clab">Raindrop Data View — Groups with Arrows</div></div>
+</div>
+</div>
+<div class="lrow">
+<div class="li"><div class="lsw" style="background:#EB8705"></div>Grand Mean</div>
+<div class="li"><div class="lsw" style="background:#008443"></div>Between arrows</div>
+<div class="li"><div class="lsw" style="background:rgba(221,29,33,0.4)"></div>Within arrows</div>
+</div>
+<div class="rrow" id="s7stats"></div>
+<div class="dbox nrej" id="s7dec"><div class="vd" id="s7verdict">Generate data to see results</div><div class="vdd" id="s7verdDet"></div></div>
+<div id="s7anovaWrap"></div>
+<div class="canvas-wrap" id="s7fdistWrap" style="display:none"><canvas id="s7fcv" style="height:240px"></canvas><div class="clab">F-Distribution with Your Computed F</div></div>`;
+document.getElementById('s7k').addEventListener('input',buildS7Sliders);
+buildS7Sliders();
+}
+function buildS7Sliders(){
+const k=+document.getElementById('s7k').value;document.getElementById('s7kV').textContent=k;
+let html='';
+for(let i=0;i<k;i++){const col=GC[i%6],defMean=50+((i-(k-1)/2)*5);
+html+=`<div class="cg" style="border-color:${col};padding:8px 12px;margin-bottom:6px">
+<label style="color:${col};font-size:0.88em">Group ${i+1}</label>
+<div class="sr"><span style="font-size:0.82em;min-width:36px">μ:</span><input type="range" class="s7mean" min="30" max="70" step="0.5" value="${defMean}" style="accent-color:${col}"><span class="val" style="color:${col}" id="s7m${i}V">${defMean.
